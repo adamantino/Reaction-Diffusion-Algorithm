@@ -4,16 +4,16 @@
 var grid;
 var next;
 
-var Da = 1;
-var Db = 0.4;
-var feed = 0.0367;
-var k = 0.0649;
+//var Da = 1;
+//var Db = 0.4;
+//var feed = 0.0367;
+//var k = 0.0649;
 
 // initial version
-//var Da = 1;
-//var Db = 0.5;
-//var feed = 0.055;
-//var k = 0.062;
+var Da = 1;
+var Db = 0.5;
+var feed = 0.055;
+var k = 0.062;
 
 // separating dots
 //var Da = 1;
@@ -26,8 +26,10 @@ var k = 0.0649;
 function setup() {
 	createCanvas(200, 200);
 	pixelDensity(1);
+
 	grid = [];
 	next = [];
+
 	for(var x = 0; x < width; x++){
 		grid[x] = [];
 		next[x] = [];
@@ -47,6 +49,7 @@ function setup() {
 
 	for(var i = centX; i < (centX + sizX); i++){
 		for(var j = centY; j < (centY + sizY); j++){
+			grid[i][j].a = 0.1;
 			grid[i][j].b = 1;
 		}
 	}
@@ -62,11 +65,11 @@ function draw(){
 			var a = grid[x][y].a;
 			var b = grid[x][y].b;
 			next[x][y].a = a + 
-						  (Da * laplaceA(x, y)) - 
+						  (Da * laplace(x, y, "a")) - 
 						  (a * b * b) + 
 						  (feed * (1 - a));
 			next[x][y].b = b + 
-						  (Db * laplaceB(x, y)) + 
+						  (Db * laplace(x, y, "b")) + 
 						  (a * b * b) - 
 						  ((k +feed) * b);
 
@@ -103,32 +106,20 @@ function swap(){
 	next = tmp;
 }
 
-function laplaceA(x, y){
-	var sumA = 0;
-	sumA += grid[x][y].a * -1;
-	sumA += grid[x-1][y].a * 0.2;
-	sumA += grid[x+1][y].a * 0.2;
-	sumA += grid[x][y+1].a * 0.2;
-	sumA += grid[x][y-1].a * 0.2;
-	sumA += grid[x-1][y-1].a * 0.05; 
-	sumA += grid[x-1][y+1].a * 0.05;
-	sumA += grid[x+1][y-1].a * 0.05;
-	sumA += grid[x+1][y+1].a * 0.05; 
-return sumA;
-}
+function laplace(x, y, ab){
+	var sum = 0;
 
-function laplaceB(x, y){
-	var sumB = 0;
-	sumB += grid[x][y].b * -1;
-	sumB += grid[x-1][y].b * 0.2;
-	sumB += grid[x+1][y].b * 0.2;
-	sumB += grid[x][y+1].b * 0.2;
-	sumB += grid[x][y-1].b * 0.2;
-	sumB += grid[x-1][y-1].b * 0.05; 
-	sumB += grid[x-1][y+1].b * 0.05;
-	sumB += grid[x+1][y-1].b * 0.05;
-	sumB += grid[x+1][y+1].b * 0.05; 
-return sumB;
+	sum += grid[x][y][ab] * -1;
+	sum += grid[x-1][y][ab] * 0.2;
+	sum += grid[x+1][y][ab] * 0.2;
+	sum += grid[x][y+1][ab] * 0.2;
+	sum += grid[x][y-1][ab] * 0.2;
+	sum += grid[x-1][y-1][ab] * 0.05; 
+	sum += grid[x-1][y+1][ab] * 0.05;
+	sum += grid[x+1][y-1][ab] * 0.05;
+	sum += grid[x+1][y+1][ab] * 0.05; 
+
+return sum;
 }
 
 
